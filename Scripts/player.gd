@@ -1,11 +1,18 @@
 extends CharacterBody2D
+
 var accel = 300
 var rocket_scene = preload("res://Scenes/rocket.tscn")
 @onready var rocket_container = $RocketContainer
+@onready var shoot_sound = $ShootSound
+
+signal took_damage
+
 
 func _process(delta):
 	if Input.is_action_just_pressed("shoot"):
-		shoot()
+		if rocket_container.get_children().size() < 5:
+			shoot()
+			shoot_sound.play()
 		
 func _physics_process(delta):
 	velocity = Vector2(0,0)
@@ -31,3 +38,10 @@ func shoot():
 	rocket_container.add_child(rocket_instance)
 	rocket_instance.global_position = global_position
 	rocket_instance.global_position.x += 75
+
+
+func take_damage():
+	emit_signal("took_damage")
+	
+func die():
+	queue_free()
